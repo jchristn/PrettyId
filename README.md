@@ -16,11 +16,14 @@ Under the hood, PrettyId uses base64 strings of GUIDs to generate a random ident
 
 First things first - do you need help or have feedback?  File an issue here!
 
-## Performance and scale
+## Performance and Security
 
-It's pretty quick :)
+It's pretty quick :)  The shorter the list of allowed characters, the slower it will run.
+
+On security, the library has no way to guarantee that it will *never* issue the same ID twice.  It is however based on GUIDs, which have a ridiculously low theoretical probability of collision (I would encourage you to check out Stephen Cleary's blog post at https://blog.stephencleary.com/2010/11/few-words-on-guids.html)
 
 ## Simple Example
+
 ```csharp
 using PrettyId;
 
@@ -35,7 +38,9 @@ Console.WriteLine(IdGenerator.Generate());
 ```
 
 Want to set the list of valid characters?  
+
 ```csharp
 IdGenerator.ValidCharacters = new char[] { 'a', 'b', 'c', 'd', ... };
 ```
+
 **Note** With fewer characters, it will take longer to generate an ID, and there is a mechanism internally to iterate over new GUIDs a maximum of ```MaxIterations``` times.  If this number of iterations is exceeded, an exception will be thrown.  Additionally, only valid base64 characters should be included in the list.  
