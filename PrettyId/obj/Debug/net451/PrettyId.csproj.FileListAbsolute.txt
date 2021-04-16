@@ -1,0 +1,12 @@
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\Assets\icon.ico
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\Assets\icon.png
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\LICENSE.md
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\PrettyId.pdb
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.csprojAssemblyReference.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.AssemblyInfoInputs.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.AssemblyInfo.cs
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.csproj.CoreCompileInputs.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net451\PrettyId.pdb
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net451\PrettyId.xml

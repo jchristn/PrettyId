@@ -1,0 +1,16 @@
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\Assets\icon.ico
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\Assets\icon.png
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\LICENSE.md
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\PrettyId.deps.json
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\ref\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\PrettyId.pdb
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.csprojAssemblyReference.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.GeneratedMSBuildEditorConfig.editorconfig
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.AssemblyInfoInputs.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.AssemblyInfo.cs
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.csproj.CoreCompileInputs.cache
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\ref\PrettyId.dll
+C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.pdb
+C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\PrettyId.xml
