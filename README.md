@@ -1,4 +1,4 @@
-![alt tag](https://github.com/jchristn/prettyid/blob/main/assets/icon.png)
+![alt tag](https://raw.githubusercontent.com/jchristn/PrettyId/main/PrettyId/Assets/icon.ico)
 
 # PrettyId
 
