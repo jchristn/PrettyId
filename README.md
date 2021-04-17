@@ -28,7 +28,7 @@ On security, the library has no way to guarantee that it will *never* issue the 
 using PrettyId;
 
 Console.WriteLine(IdGenerator.Generate("data_", 32));
-data_0mAg6shuO0GSplEn7GmXR
+// data_0mAg6shuO0GSplEn7GmXR
 
 Console.WriteLine(IdGenerator.Generate(64));
 // KL5ULxfC2kujhcMtDKnDKgUAANsBAdESqJBDKIgvLwdxfjo03uJEKLkn9csMt4Q
