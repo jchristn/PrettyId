@@ -7,7 +7,7 @@ namespace Test
     { 
         static void Main(string[] args)
         {
-            IdGenerator.ValidCharacters = new char[] {}
+            IdGenerator.ValidCharacters = new char[] { };
             for (int i = 0; i < 5; i++)
             {
                 Console.WriteLine(IdGenerator.Generate("data_", 32));

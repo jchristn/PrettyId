@@ -4,10 +4,11 @@ C:\code\Misc\PrettyId\PrettyId\bin\Release\netcoreapp3.1\LICENSE.md
 C:\code\Misc\PrettyId\PrettyId\bin\Release\netcoreapp3.1\PrettyId.deps.json
 C:\code\Misc\PrettyId\PrettyId\bin\Release\netcoreapp3.1\PrettyId.dll
 C:\code\Misc\PrettyId\PrettyId\bin\Release\netcoreapp3.1\PrettyId.pdb
-C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.csprojAssemblyReference.cache
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.AssemblyInfoInputs.cache
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.AssemblyInfo.cs
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.csproj.CoreCompileInputs.cache
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.dll
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.pdb
 C:\code\Misc\PrettyId\PrettyId\bin\Release\netcoreapp3.1\PrettyId.xml
+C:\Code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.csproj.AssemblyReference.cache
+C:\Code\Misc\PrettyId\PrettyId\obj\Release\netcoreapp3.1\PrettyId.GeneratedMSBuildEditorConfig.editorconfig

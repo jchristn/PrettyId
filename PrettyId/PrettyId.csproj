@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net451;net5.0;netcoreapp3.1</TargetFrameworks>
+	<Version>1.0.0.1</Version>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net451;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
     <Description>Simple static method for generating IDs like those used by Stripe and other services</Description>
@@ -12,7 +13,7 @@
     <RepositoryUrl>https://github.com/jchristn/PrettyId</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
     <PackageTags>pretty id identifier stripe</PackageTags>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <PackageReleaseNotes>.NET 6 support</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

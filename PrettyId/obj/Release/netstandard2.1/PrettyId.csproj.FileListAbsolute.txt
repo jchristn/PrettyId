@@ -9,5 +9,6 @@ C:\code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.AssemblyInfo.
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.csproj.CoreCompileInputs.cache
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.dll
 C:\code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.pdb
-C:\code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.csprojAssemblyReference.cache
 C:\code\Misc\PrettyId\PrettyId\bin\Release\netstandard2.1\PrettyId.xml
+C:\Code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.csproj.AssemblyReference.cache
+C:\Code\Misc\PrettyId\PrettyId\obj\Release\netstandard2.1\PrettyId.GeneratedMSBuildEditorConfig.editorconfig
