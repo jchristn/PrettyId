@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v5.0": {
-      "PrettyId/1.0.0.1": {
+      "PrettyId/1.0.0.2": {
         "runtime": {
           "PrettyId.dll": {}
         }
@@ -14,7 +14,7 @@
     }
   },
   "libraries": {
-    "PrettyId/1.0.0.1": {
+    "PrettyId/1.0.0.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

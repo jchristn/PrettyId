@@ -79,7 +79,7 @@ namespace PrettyId
         #endregion
 
         #region Constructors-and-Factories
-         
+
         #endregion
 
         #region Public-Methods
@@ -87,20 +87,21 @@ namespace PrettyId
         /// <summary>
         /// Generate an ID.
         /// </summary>
+        /// <param name="len">Length.</param>
+        /// <param name="validChars">Array of valid characters.</param>
         /// <returns>String.</returns>
-        public static string Generate()
+        public static string Generate(int len = 32, char[] validChars = null)
         {
-            return Generate(null, _MaximumLength);
+            return Generate(null, len, validChars);
         }
 
         /// <summary>
         /// Generate an ID.
         /// </summary>
-        /// <param name="len">Length.</param>
         /// <returns>String.</returns>
-        public static string Generate(int len)
+        public static string Generate()
         {
-            return Generate(null, len);
+            return Generate(null, 32, _ValidCharacters);
         }
 
         /// <summary>
@@ -108,8 +109,9 @@ namespace PrettyId
         /// </summary>
         /// <param name="prefix">Prefix.</param>
         /// <param name="maxLen">Maximum length.</param>
+        /// <param name="validChars">Array of valid characters.</param>
         /// <returns>String.</returns>
-        public static string Generate(string prefix = null, int maxLen = 32)
+        public static string Generate(string prefix = null, int maxLen = 32, char[] validChars = null)
         {
             if (maxLen < 1) throw new ArgumentException("Maximum length must be greater than zero.");
             if (!String.IsNullOrEmpty(prefix))
@@ -138,10 +140,21 @@ namespace PrettyId
                         break;
                     }
 
-                    if (_ValidCharacters.Contains(c))
+                    if (validChars != null)
                     {
-                        ret += c;
-                        position++;
+                        if (validChars.Contains(c))
+                        {
+                            ret += c;
+                            position++;
+                        }
+                    }
+                    else
+                    {
+                        if (_ValidCharacters.Contains(c))
+                        {
+                            ret += c;
+                            position++;
+                        }
                     }
                 }
 

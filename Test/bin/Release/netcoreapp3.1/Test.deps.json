@@ -8,13 +8,13 @@
     ".NETCoreApp,Version=v3.1": {
       "Test/1.0.0": {
         "dependencies": {
-          "PrettyId": "1.0.0.1"
+          "PrettyId": "1.0.0.2"
         },
         "runtime": {
           "Test.dll": {}
         }
       },
-      "PrettyId/1.0.0.1": {
+      "PrettyId/1.0.0.2": {
         "runtime": {
           "PrettyId.dll": {}
         }
@@ -27,7 +27,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "PrettyId/1.0.0.1": {
+    "PrettyId/1.0.0.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

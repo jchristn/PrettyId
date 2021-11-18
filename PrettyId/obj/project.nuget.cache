@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4czC5ZWCBVrtgv0a1KXnjojYD0tHua/YqgUw6IMBxZvzFFFvkID8H4YBxZhhhN7PM78RDU1x32spDIe/Ybiu4Q==",
+  "dgSpecHash": "9rF3YeGrdwwaaPnUmiZ6m7sHKzIDGxtTs5o+AufLnpYNiG2XoUOw0FTSSQlc9tVjPPItWEA4UI1un0rCg6lcAA==",
   "success": true,
-  "projectFilePath": "C:\\Code\\Misc\\PrettyId\\PrettyId\\PrettyId.csproj",
+  "projectFilePath": "C:\\code\\misc\\prettyid\\PrettyId\\PrettyId.csproj",
   "expectedPackageFiles": [
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"

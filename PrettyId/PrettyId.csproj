@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<Version>1.0.0.1</Version>
+	<Version>1.0.0.2</Version>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net451;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <Authors>Joel Christner</Authors>
     <Company>Joel Christner</Company>
@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/jchristn/PrettyId</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
     <PackageTags>pretty id identifier stripe</PackageTags>
-    <PackageReleaseNotes>.NET 6 support</PackageReleaseNotes>
+    <PackageReleaseNotes>New signatures for .Generate to allow passing in specific valid characters array.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

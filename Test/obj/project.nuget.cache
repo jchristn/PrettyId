@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/o4CSXnQxMTjcmjDMTo2cQGYQWUxAKfZ8IabQVkudQax3jS//98ztlBKYfNGo3xKTrJi9j1f2OlexO42FywsUw==",
+  "dgSpecHash": "GrzgK9OR5L068q2dT0GVlLjmRYkHOFk4zwk5Ir82MUDpDz36aDzvI3Q0Fxs2WEeBDrX5luoEybMCc9HM1NzRcA==",
   "success": true,
-  "projectFilePath": "C:\\Code\\Misc\\PrettyId\\Test\\Test.csproj",
+  "projectFilePath": "C:\\code\\misc\\prettyid\\Test\\Test.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
