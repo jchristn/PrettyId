@@ -13,3 +13,4 @@ C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.dll
 C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\ref\PrettyId.dll
 C:\code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.pdb
 C:\code\Misc\PrettyId\PrettyId\bin\Debug\net5.0\PrettyId.xml
+C:\Code\Misc\PrettyId\PrettyId\obj\Debug\net5.0\PrettyId.csproj.AssemblyReference.cache

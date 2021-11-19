@@ -122,11 +122,11 @@ namespace PrettyId
                 }
             }
 
-            int actualLen = GetActualLength(prefix, maxLen);
+            int keyLen = GetActualLength(prefix, maxLen);
             int iteration = 0;
             string ret = "";
             if (!String.IsNullOrEmpty(prefix)) ret += prefix;
-            int position = ret.Length;
+            int position = 0;
             bool complete = false;
 
             while (iteration < _MaxIterations)
@@ -134,7 +134,7 @@ namespace PrettyId
                 string base64 = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
                 foreach (char c in base64)
                 {
-                    if (position >= (actualLen - 1))
+                    if (position >= keyLen)
                     {
                         complete = true;
                         break;
