@@ -1,9 +1,0 @@
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\bin\Debug\netstandard2.0\StripeIdGenerator.deps.json
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\bin\Debug\netstandard2.0\StripeIdGenerator.dll
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\bin\Debug\netstandard2.0\StripeIdGenerator.pdb
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.csprojAssemblyReference.cache
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.AssemblyInfoInputs.cache
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.AssemblyInfo.cs
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.csproj.CoreCompileInputs.cache
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.dll
-c:\code\misc\StripeIdGenerator\StripeIdGenerator\obj\Debug\netstandard2.0\StripeIdGenerator.pdb
