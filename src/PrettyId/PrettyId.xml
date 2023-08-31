@@ -4,6 +4,26 @@
         <name>PrettyId</name>
     </assembly>
     <members>
+        <member name="T:PrettyId.DefaultCharacterSets">
+            <summary>
+            Default character sets.
+            </summary>
+        </member>
+        <member name="F:PrettyId.DefaultCharacterSets.EnglishAlphanumeric">
+            <summary>
+            English alphanumeric.
+            </summary>
+        </member>
+        <member name="F:PrettyId.DefaultCharacterSets.Base64">
+            <summary>
+            Base64 characters.
+            </summary>
+        </member>
+        <member name="F:PrettyId.DefaultCharacterSets.USKeyboard">
+            <summary>
+            Keys from a standard US keyboard.
+            </summary>
+        </member>
         <member name="T:PrettyId.IdGenerator">
             <summary>
             ID generator.
@@ -26,6 +46,12 @@
             Default is 32.  Minimum is 1.  Maximum is 64.
             </summary>
         </member>
+        <member name="M:PrettyId.IdGenerator.Generate">
+            <summary>
+            Generate an ID.
+            </summary>
+            <returns>String.</returns>
+        </member>
         <member name="M:PrettyId.IdGenerator.Generate(System.Int32,System.Char[])">
             <summary>
             Generate an ID.
@@ -34,15 +60,18 @@
             <param name="validChars">Array of valid characters.</param>
             <returns>String.</returns>
         </member>
-        <member name="M:PrettyId.IdGenerator.Generate">
-            <summary>
-            Generate an ID.
-            </summary>
-            <returns>String.</returns>
-        </member>
         <member name="M:PrettyId.IdGenerator.Generate(System.String,System.Int32,System.Char[])">
             <summary>
             Generate an ID.
+            </summary>
+            <param name="prefix">Prefix.</param>
+            <param name="maxLen">Maximum length.</param>
+            <param name="validChars">Array of valid characters.</param>
+            <returns>String.</returns>
+        </member>
+        <member name="M:PrettyId.IdGenerator.GenerateBase64(System.String,System.Int32,System.Char[])">
+            <summary>
+            Generate an ID with a valid base64 value.
             </summary>
             <param name="prefix">Prefix.</param>
             <param name="maxLen">Maximum length.</param>

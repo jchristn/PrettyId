@@ -2,9 +2,10 @@
 
 ## Current Version
 
-v1.0.0
+v1.0.x
 
 - Initial release
+- Added support for generating valid base64 values
 
 ## Previous Versions
 

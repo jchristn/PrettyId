@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>1.0.0.4</Version>
+		<Version>1.0.1</Version>
 		<TargetFrameworks>netstandard2.1;net461;net48;net6.0;net7.0</TargetFrameworks>
 		<Authors>Joel Christner</Authors>
 		<Company>Joel Christner</Company>
@@ -13,7 +13,7 @@
 		<RepositoryUrl>https://github.com/jchristn/PrettyId</RepositoryUrl>
 		<RepositoryType>github</RepositoryType>
 		<PackageTags>pretty id identifier stripe</PackageTags>
-		<PackageReleaseNotes>Strong naming.</PackageReleaseNotes>
+		<PackageReleaseNotes>Add generation of valid base64 values.</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\..\PrettyId.snk</AssemblyOriginatorKeyFile>
@@ -81,8 +81,8 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Include="..\..\README.md">
-		  <Pack>True</Pack>
-		  <PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
 		</None>
 		<None Include="Assets\icon.png">
 			<Pack>True</Pack>

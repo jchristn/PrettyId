@@ -8,9 +8,10 @@ PrettyId is a simple library for creating uniform IDs similar to those used by S
 
 Under the hood, PrettyId uses base64 strings of GUIDs to generate a random identifier of the specified length.  You can choose to set a prefix that can be included in the result.
 
-## New in v1.0.0
+## New in v1.0.x
 
 - Initial release
+- Added support for generating valid base64 values
 
 ## Help or feedback
 
@@ -27,20 +28,31 @@ On security, the library has no way to guarantee that it will *never* issue the 
 ```csharp
 using PrettyId;
 
+Console.WriteLine(IdGenerator.Generate());
+// 32 bytes in length by default
+// 5wS4rcgWk6Tr0CO0sfXgA0NAtlOp60C
+
 Console.WriteLine(IdGenerator.Generate("data_", 32));
+// 32 bytes in length, including the header
 // data_0mAg6shuO0GSplEn7GmXR
 
 Console.WriteLine(IdGenerator.Generate(64));
+// 64 bytes in length
 // KL5ULxfC2kujhcMtDKnDKgUAANsBAdESqJBDKIgvLwdxfjo03uJEKLkn9csMt4Q
 
-Console.WriteLine(IdGenerator.Generate());
-// 5wS4rcgWk6Tr0CO0sfXgA0NAtlOp60C
+Console.WriteLine(IdGenerator.GenerateBase64("b64_", 64));
+// 64 bytes in length, including the header
+// b64_TE42UVVmRmltVUtXMExOdStGSE9Pdz09bDlvR1dBSHErVXl4VG1mRndSYWhH
 ```
-
 Want to set the list of valid characters?  
 
 ```csharp
 IdGenerator.ValidCharacters = new char[] { 'a', 'b', 'c', 'd', ... };
 ```
-
-**Note** With fewer characters, it will take longer to generate an ID, and there is a mechanism internally to iterate over new GUIDs a maximum of ```MaxIterations``` times.  If this number of iterations is exceeded, an exception will be thrown.  Additionally, only valid base64 characters should be included in the list.  
+Or use one of the built-in character sets.
+```csharp
+IdGenerator.ValidCharacters = DefaultCharacterSets.EnglishAlphanumeric;
+IdGenerator.ValidCharacters = DefaultCharacterSets.Base64;
+IdGenerator.ValidCharacters = DefaultCharacterSets.USKeyboard;
+```
+Have a recommendation for default character sets?  Please file an issue with the details or submit a PR!

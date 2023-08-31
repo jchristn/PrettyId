@@ -66,12 +66,7 @@ namespace PrettyId
 
         #region Private-Members
 
-        private static char[] _ValidCharacters = new char[]
-        {
-            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-            'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-            '0','1','2','3','4','5','6','7','8','9'
-        };
+        private static char[] _ValidCharacters = DefaultCharacterSets.EnglishAlphanumeric;
 
         private static int _MaximumLength = 32;
         private static short _MaxIterations = 64;
@@ -87,21 +82,21 @@ namespace PrettyId
         /// <summary>
         /// Generate an ID.
         /// </summary>
+        /// <returns>String.</returns>
+        public static string Generate()
+        {
+            return Generate(null, 32, _ValidCharacters);
+        }
+
+        /// <summary>
+        /// Generate an ID.
+        /// </summary>
         /// <param name="len">Length.</param>
         /// <param name="validChars">Array of valid characters.</param>
         /// <returns>String.</returns>
         public static string Generate(int len = 32, char[] validChars = null)
         {
             return Generate(null, len, validChars);
-        }
-
-        /// <summary>
-        /// Generate an ID.
-        /// </summary>
-        /// <returns>String.</returns>
-        public static string Generate()
-        {
-            return Generate(null, 32, _ValidCharacters);
         }
 
         /// <summary>
@@ -171,9 +166,50 @@ namespace PrettyId
             return ret;
         }
 
+        /// <summary>
+        /// Generate an ID with a valid base64 value.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <param name="maxLen">Maximum length.</param>
+        /// <param name="validChars">Array of valid characters.</param>
+        /// <returns>String.</returns>
+        public static string GenerateBase64(string prefix = null, int maxLen = 32, char[] validChars = null)
+        {
+            if (maxLen < 1) throw new ArgumentException("Maximum length must be greater than zero.");
+            if (!String.IsNullOrEmpty(prefix))
+            {
+                if (prefix.Length >= maxLen - 3)
+                {
+                    throw new ArgumentException("Maximum length must be greater than the length of the supplied prefix by three or more for base64.");
+                }
+            }
+
+            int keyLen = GetActualLength(prefix, maxLen);
+            while (keyLen % 4 > 0) keyLen--; 
+            keyLen = GetStringLengthFromEncodedLength(keyLen);
+            string key = Generate(null, keyLen, (validChars != null ? validChars : DefaultCharacterSets.USKeyboard));
+            string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(key));
+            
+            string ret = "";
+            if (!String.IsNullOrEmpty(prefix)) ret += prefix;
+            ret += base64;
+
+            return ret;
+        }
+
         #endregion
 
         #region Private-Methods
+
+        private static int GetEncodedLengthFromStringLength(int len)
+        {
+            return (len / 3) * 4;
+        }
+
+        private static int GetStringLengthFromEncodedLength(int len)
+        {
+            return (len / 4) * 3;
+        }
 
         private static int GetActualLength(string prefix, int maxLen)
         {

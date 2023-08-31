@@ -48,6 +48,22 @@ namespace Test
                 val = IdGenerator.Generate(64, new char[] { 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
                 Console.WriteLine(val.Length + ": " + val);
             }
+
+            Console.WriteLine("");
+            Console.WriteLine("Base64 values, total length 48-bytes");
+            for (int i = 0; i < 5; i++)
+            {
+                val = IdGenerator.GenerateBase64(null, 48);
+                Console.WriteLine(val.Length + ": " + val);
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("Base64 values, with header, total length 64-bytes");
+            for (int i = 0; i < 5; i++)
+            {
+                val = IdGenerator.GenerateBase64("b64_", 64);
+                Console.WriteLine(val.Length + ": " + val);
+            }
         }
     }
 }
