@@ -49,7 +49,7 @@ namespace PrettyId
         /// This value may need to be larger if using a restrictive set of allowed characters.
         /// Default is 32.  Minimum is 1.  Maximum is 64.
         /// </summary>
-        public static int MaxIterations
+        public static short MaxIterations
         {
             get
             {
@@ -59,6 +59,7 @@ namespace PrettyId
             {
                 if (value < 1) throw new ArgumentException("Maximum iterations must be greater than zero.");
                 if (value > 64) throw new ArgumentException("Maximum iterations must be 64 or less.");
+                _MaxIterations = value;
             }
         }
 
