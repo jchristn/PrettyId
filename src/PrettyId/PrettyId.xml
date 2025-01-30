@@ -24,6 +24,16 @@
             Keys from a standard US keyboard.
             </summary>
         </member>
+        <member name="F:PrettyId.DefaultCharacterSets.HexadecimalUppercase">
+            <summary>
+            Hexadecimal characters, using uppercase letters.
+            </summary>
+        </member>
+        <member name="F:PrettyId.DefaultCharacterSets.HexadecimalLowercase">
+            <summary>
+            Hexadecimal characters, using lowercase letters.
+            </summary>
+        </member>
         <member name="T:PrettyId.IdGenerator">
             <summary>
             ID generator.
