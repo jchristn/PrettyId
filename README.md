@@ -1,4 +1,6 @@
-![alt tag](https://raw.githubusercontent.com/jchristn/PrettyId/main/PrettyId/Assets/icon.ico)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/jchristn/PrettyId/refs/heads/main/assets/icon.png?raw=true" width="182" height="182">
+</div>
 
 # PrettyId
 
