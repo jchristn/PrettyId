@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>1.0.5</Version>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net461;net462;net48;net6.0;net8.0</TargetFrameworks>
+		<Version>2.0.0</Version>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net461;net462;net48;net8.0</TargetFrameworks>
 		<Authors>Joel Christner</Authors>
 		<Company>Joel Christner</Company>
 		<Description>Simple static method for generating IDs like those used by Stripe and other services</Description>
