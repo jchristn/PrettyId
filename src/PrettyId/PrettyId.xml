@@ -60,7 +60,8 @@
         <member name="P:PrettyId.IdGenerator.MaxIterations">
             <summary>
             The maximum number of iterations allowed when generating a unique ID.
-            This value may need to be larger if using a restrictive set of allowed characters.
+            Retained for backward compatibility. The current generation algorithm uses direct
+            indexing and does not require multiple iterations.
             Default is 64. Minimum is 1. Maximum is 256.
             </summary>
         </member>
@@ -82,6 +83,8 @@
             </summary>
             <param name="validCharacters">Array of valid characters to use for ID generation.</param>
             <param name="maximumLength">Default maximum length for generated IDs.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when validCharacters is null.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when validCharacters has fewer than 16 characters or maximumLength is invalid.</exception>
         </member>
         <member name="M:PrettyId.IdGenerator.#ctor(System.Collections.Generic.HashSet{System.Char},System.Int32)">
             <summary>
@@ -89,6 +92,8 @@
             </summary>
             <param name="validCharacters">HashSet of valid characters to use for ID generation.</param>
             <param name="maximumLength">Default maximum length for generated IDs.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when validCharacters is null.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when validCharacters has fewer than 16 characters or maximumLength is invalid.</exception>
         </member>
         <member name="M:PrettyId.IdGenerator.Generate">
             <summary>
@@ -111,12 +116,12 @@
             <param name="maxLen">Maximum total length including the prefix.</param>
             <returns>Generated ID string.</returns>
             <exception cref="T:System.ArgumentException">Thrown when maxLen is invalid or prefix is too long.</exception>
-            <exception cref="T:System.InvalidOperationException">Thrown when unable to generate an ID within the iteration limit.</exception>
         </member>
         <member name="M:PrettyId.IdGenerator.GenerateUrlSafe(System.String,System.Int32)">
             <summary>
             Generate a URL-safe ID (uses only characters safe for URLs without encoding).
-            Uses: a-z, A-Z, 0-9, hyphen, and underscore.
+            Uses: a-z, A-Z, 0-9, hyphen, underscore, period, and tilde.
+            This method is thread-safe and does not modify instance state.
             </summary>
             <param name="prefix">Prefix to prepend to the ID. Can be null or empty.</param>
             <param name="maxLen">Maximum total length including the prefix.</param>
@@ -136,16 +141,24 @@
             Generate an ID and encode it as base64.
             This method generates a random string, then base64-encodes it.
             Note: The result will be longer than the input due to base64 encoding overhead.
+            This method is thread-safe and does not modify instance state.
             </summary>
             <param name="prefix">Prefix to prepend to the final encoded result.</param>
             <param name="maxLen">Maximum total length including the prefix.</param>
             <returns>Base64-encoded ID string.</returns>
         </member>
-        <member name="M:PrettyId.IdGenerator.WarnIfRestrictiveCharacterSet">
+        <member name="M:PrettyId.IdGenerator.GenerateInternal(System.String,System.Int32,System.Char[])">
             <summary>
-            Warns (via console) if the character set is very restrictive and may cause performance issues.
-            A character set is considered restrictive if it has fewer than 16 characters.
+            Core generation method. Produces a random string from the given character set
+            using direct modular indexing over random bytes. Thread-safe — no instance state is mutated.
             </summary>
+        </member>
+        <member name="M:PrettyId.IdGenerator.ThrowIfRestrictiveCharacterSet">
+            <summary>
+            Throws an ArgumentException if the character set has fewer than 16 unique characters,
+            as this provides insufficient entropy for generating unique IDs.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown when the character set contains fewer than 16 characters.</exception>
         </member>
     </members>
 </doc>

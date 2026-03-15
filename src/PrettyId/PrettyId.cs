@@ -44,7 +44,8 @@ namespace PrettyId
 
         /// <summary>
         /// The maximum number of iterations allowed when generating a unique ID.
-        /// This value may need to be larger if using a restrictive set of allowed characters.
+        /// Retained for backward compatibility. The current generation algorithm uses direct
+        /// indexing and does not require multiple iterations.
         /// Default is 64. Minimum is 1. Maximum is 256.
         /// </summary>
         public short MaxIterations
@@ -72,6 +73,8 @@ namespace PrettyId
         private int _MaximumLength = 32;
         private short _MaxIterations = 64;
 
+        private static readonly RandomNumberGenerator _CryptoRng = RandomNumberGenerator.Create();
+
         #endregion
 
         #region Constructors-and-Factories
@@ -90,6 +93,8 @@ namespace PrettyId
         /// </summary>
         /// <param name="validCharacters">Array of valid characters to use for ID generation.</param>
         /// <param name="maximumLength">Default maximum length for generated IDs.</param>
+        /// <exception cref="ArgumentNullException">Thrown when validCharacters is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when validCharacters has fewer than 16 characters or maximumLength is invalid.</exception>
         public IdGenerator(char[] validCharacters, int maximumLength = 32)
         {
             if (validCharacters == null) throw new ArgumentNullException(nameof(validCharacters));
@@ -99,7 +104,7 @@ namespace PrettyId
             _ValidCharacters = new HashSet<char>(validCharacters);
             _MaximumLength = maximumLength;
 
-            WarnIfRestrictiveCharacterSet();
+            ThrowIfRestrictiveCharacterSet();
         }
 
         /// <summary>
@@ -107,6 +112,8 @@ namespace PrettyId
         /// </summary>
         /// <param name="validCharacters">HashSet of valid characters to use for ID generation.</param>
         /// <param name="maximumLength">Default maximum length for generated IDs.</param>
+        /// <exception cref="ArgumentNullException">Thrown when validCharacters is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when validCharacters has fewer than 16 characters or maximumLength is invalid.</exception>
         public IdGenerator(HashSet<char> validCharacters, int maximumLength = 32)
         {
             if (validCharacters == null) throw new ArgumentNullException(nameof(validCharacters));
@@ -116,7 +123,7 @@ namespace PrettyId
             _ValidCharacters = validCharacters;
             _MaximumLength = maximumLength;
 
-            WarnIfRestrictiveCharacterSet();
+            ThrowIfRestrictiveCharacterSet();
         }
 
         #endregion
@@ -149,86 +156,22 @@ namespace PrettyId
         /// <param name="maxLen">Maximum total length including the prefix.</param>
         /// <returns>Generated ID string.</returns>
         /// <exception cref="ArgumentException">Thrown when maxLen is invalid or prefix is too long.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when unable to generate an ID within the iteration limit.</exception>
         public string Generate(string prefix, int maxLen)
         {
-            if (maxLen < 1)
-                throw new ArgumentException("Maximum length must be greater than zero.", nameof(maxLen));
-
-            if (!string.IsNullOrEmpty(prefix))
-            {
-                if (prefix.Length >= maxLen)
-                {
-                    throw new ArgumentException(
-                        $"Maximum length ({maxLen}) must be greater than prefix length ({prefix.Length}).",
-                        nameof(maxLen));
-                }
-            }
-
-            int keyLen = GetActualLength(prefix, maxLen);
-            int iteration = 0;
-            StringBuilder sb = new StringBuilder(maxLen);
-
-            if (!string.IsNullOrEmpty(prefix))
-                sb.Append(prefix);
-
-            int position = 0;
-            bool complete = false;
-
-            while (iteration < _MaxIterations)
-            {
-                string randomSource = GetRandomSource();
-
-                foreach (char c in randomSource)
-                {
-                    if (position >= keyLen)
-                    {
-                        complete = true;
-                        break;
-                    }
-
-                    if (_ValidCharacters.Contains(c))
-                    {
-                        sb.Append(c);
-                        position++;
-                    }
-                }
-
-                if (complete)
-                    break;
-
-                iteration++;
-            }
-
-            if (!complete)
-            {
-                throw new InvalidOperationException(
-                    $"Unable to generate an ID with the supplied constraints after {_MaxIterations} iterations. " +
-                    $"Consider using a larger character set or increasing MaxIterations.");
-            }
-
-            return sb.ToString();
+            return GenerateInternal(prefix, maxLen, _ValidCharacters.ToArray());
         }
 
         /// <summary>
         /// Generate a URL-safe ID (uses only characters safe for URLs without encoding).
-        /// Uses: a-z, A-Z, 0-9, hyphen, and underscore.
+        /// Uses: a-z, A-Z, 0-9, hyphen, underscore, period, and tilde.
+        /// This method is thread-safe and does not modify instance state.
         /// </summary>
         /// <param name="prefix">Prefix to prepend to the ID. Can be null or empty.</param>
         /// <param name="maxLen">Maximum total length including the prefix.</param>
         /// <returns>URL-safe ID string.</returns>
         public string GenerateUrlSafe(string prefix = null, int maxLen = 32)
         {
-            var originalCharSet = _ValidCharacters;
-            try
-            {
-                _ValidCharacters = new HashSet<char>(DefaultCharacterSets.UrlSafe);
-                return Generate(prefix, maxLen);
-            }
-            finally
-            {
-                _ValidCharacters = originalCharSet;
-            }
+            return GenerateInternal(prefix, maxLen, DefaultCharacterSets.UrlSafe);
         }
 
         /// <summary>
@@ -255,13 +198,14 @@ namespace PrettyId
                     nameof(maxLen));
             }
 
-            return Generate(combinedPrefix, maxLen);
+            return GenerateInternal(combinedPrefix, maxLen, _ValidCharacters.ToArray());
         }
 
         /// <summary>
         /// Generate an ID and encode it as base64.
         /// This method generates a random string, then base64-encodes it.
         /// Note: The result will be longer than the input due to base64 encoding overhead.
+        /// This method is thread-safe and does not modify instance state.
         /// </summary>
         /// <param name="prefix">Prefix to prepend to the final encoded result.</param>
         /// <param name="maxLen">Maximum total length including the prefix.</param>
@@ -290,48 +234,78 @@ namespace PrettyId
             // Calculate the original string length needed
             keyLen = GetStringLengthFromEncodedLength(keyLen);
 
-            // Generate the random string
-            var originalCharSet = _ValidCharacters;
-            try
-            {
-                _ValidCharacters = new HashSet<char>(DefaultCharacterSets.USKeyboard);
-                string key = Generate(null, keyLen);
-                string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(key));
+            // Generate the random string using USKeyboard charset directly (no instance mutation)
+            string key = GenerateInternal(null, keyLen, DefaultCharacterSets.USKeyboard);
+            string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(key));
 
-                StringBuilder result = new StringBuilder(maxLen);
-                if (!string.IsNullOrEmpty(prefix))
-                    result.Append(prefix);
-                result.Append(base64);
+            StringBuilder result = new StringBuilder(maxLen);
+            if (!string.IsNullOrEmpty(prefix))
+                result.Append(prefix);
+            result.Append(base64);
 
-                return result.ToString();
-            }
-            finally
-            {
-                _ValidCharacters = originalCharSet;
-            }
+            return result.ToString();
         }
 
         #endregion
 
         #region Private-Methods
 
-        private string GetRandomSource()
+        /// <summary>
+        /// Core generation method. Produces a random string from the given character set
+        /// using direct modular indexing over random bytes. Thread-safe — no instance state is mutated.
+        /// </summary>
+        private string GenerateInternal(string prefix, int maxLen, char[] charSet)
         {
+            if (maxLen < 1)
+                throw new ArgumentException("Maximum length must be greater than zero.", nameof(maxLen));
+
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                if (prefix.Length >= maxLen)
+                {
+                    throw new ArgumentException(
+                        $"Maximum length ({maxLen}) must be greater than prefix length ({prefix.Length}).",
+                        nameof(maxLen));
+                }
+            }
+
+            int keyLen = GetActualLength(prefix, maxLen);
+
+            StringBuilder sb = new StringBuilder(maxLen);
+            if (!string.IsNullOrEmpty(prefix))
+                sb.Append(prefix);
+
+            byte[] randomBytes = GetRandomBytes(keyLen);
+            for (int i = 0; i < keyLen; i++)
+            {
+                sb.Append(charSet[randomBytes[i] % charSet.Length]);
+            }
+
+            return sb.ToString();
+        }
+
+        private byte[] GetRandomBytes(int count)
+        {
+            byte[] bytes = new byte[count];
+
             if (UseCryptographicRng)
             {
-                // Use cryptographically secure random bytes
-                byte[] randomBytes = new byte[16];
-                using (var rng = RandomNumberGenerator.Create())
-                {
-                    rng.GetBytes(randomBytes);
-                }
-                return Convert.ToBase64String(randomBytes);
+                _CryptoRng.GetBytes(bytes);
             }
             else
             {
                 // Use GUID-based randomness (default)
-                return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                int offset = 0;
+                while (offset < count)
+                {
+                    byte[] guidBytes = Guid.NewGuid().ToByteArray();
+                    int toCopy = Math.Min(guidBytes.Length, count - offset);
+                    Buffer.BlockCopy(guidBytes, 0, bytes, offset, toCopy);
+                    offset += toCopy;
+                }
             }
+
+            return bytes;
         }
 
         private static int GetEncodedLengthFromStringLength(int len)
@@ -367,17 +341,17 @@ namespace PrettyId
         }
 
         /// <summary>
-        /// Warns (via console) if the character set is very restrictive and may cause performance issues.
-        /// A character set is considered restrictive if it has fewer than 16 characters.
+        /// Throws an ArgumentException if the character set has fewer than 16 unique characters,
+        /// as this provides insufficient entropy for generating unique IDs.
         /// </summary>
-        private void WarnIfRestrictiveCharacterSet()
+        /// <exception cref="ArgumentException">Thrown when the character set contains fewer than 16 characters.</exception>
+        private void ThrowIfRestrictiveCharacterSet()
         {
             if (_ValidCharacters.Count < 16)
             {
-                Console.WriteLine(
-                    $"Warning: Character set contains only {_ValidCharacters.Count} characters. " +
-                    $"This may require many iterations to generate IDs. " +
-                    $"Consider using a larger character set or increasing MaxIterations.");
+                throw new ArgumentException(
+                    $"Character set contains only {_ValidCharacters.Count} unique character(s). " +
+                    $"A minimum of 16 unique characters is required for sufficient ID entropy.");
             }
         }
 

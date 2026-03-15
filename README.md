@@ -90,7 +90,7 @@ string sessionId = generator.Generate("sess_", 48);
 
 ### 5. Custom Character Sets
 
-Need specific character constraints? Configure your own character set:
+Need specific character constraints? Configure your own character set (minimum 16 unique characters):
 
 ```csharp
 // Hexadecimal identifiers
@@ -98,11 +98,10 @@ IdGenerator hexGenerator = new IdGenerator(DefaultCharacterSets.HexadecimalLower
 string hexId = hexGenerator.Generate("key_", 32);
 // key_7a3f2d1e9c4b8a6d5e0f1c2a
 
-// Numeric-only codes
-char[] numericChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-IdGenerator numericGenerator = new IdGenerator(numericChars);
-string code = numericGenerator.Generate(8);
-// 72841956
+// URL-safe identifiers
+IdGenerator urlSafeGenerator = new IdGenerator(DefaultCharacterSets.UrlSafe);
+string token = urlSafeGenerator.Generate("tok_", 32);
+// tok_kLm3Pq9R.wX2nB5hJ1cF4gD6sY
 ```
 
 ### 6. Different Generators for Different ID Types
@@ -161,7 +160,7 @@ generator.MaximumLength = 48;
 // Use cryptographically secure randomness
 generator.UseCryptographicRng = true;
 
-// Increase iteration limit for restrictive character sets
+// MaxIterations retained for backward compatibility (no longer used internally)
 generator.MaxIterations = 128;
 ```
 
@@ -181,20 +180,20 @@ generator.MaxIterations = 128;
 PrettyId is designed to be fast:
 
 - ✅ Uses `StringBuilder` for efficient string building
-- ✅ Uses `HashSet<char>` for O(1) character lookups
+- ✅ Direct modular indexing over random bytes — O(n) guaranteed, no rejection loops
+- ✅ Reuses `RandomNumberGenerator` instance (no per-call allocation)
 - ✅ Generates IDs in microseconds on modern hardware
 
 **Performance Tips:**
 
-- Larger character sets = faster generation
-- Character sets with <16 characters may require multiple iterations
 - Use instance-based generators to avoid recreation overhead
+- Character sets require a minimum of 16 unique characters for sufficient entropy
 
 ## Thread Safety
 
-✅ **Instance-based generators are thread-safe for reading** (all `Generate*` methods)
+✅ **All `Generate*` methods are thread-safe** — they do not modify instance state
 
-⚠️ **Not thread-safe for writing** - don't modify properties (`ValidCharacters`, `MaximumLength`, etc.) from multiple threads
+⚠️ **Not thread-safe for writing** — don't modify properties (`ValidCharacters`, `MaximumLength`, etc.) from multiple threads
 
 ```csharp
 // Safe: Multiple threads reading

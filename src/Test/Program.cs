@@ -183,13 +183,19 @@ namespace Test
                 return id.Length == 32 && id.All(c => validChars.Contains(c)) ? id : null;
             });
 
-            // Test numeric-only character set
-            RunTestWithSample("Numeric-only character set", () =>
+            // Test numeric-only character set (too few chars, should throw)
+            RunTest("Numeric-only character set throws due to insufficient entropy", () =>
             {
-                char[] numericChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-                IdGenerator generator = new IdGenerator(numericChars);
-                string id = generator.Generate(16);
-                return id.Length == 16 && id.All(c => char.IsDigit(c)) ? id : null;
+                try
+                {
+                    char[] numericChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                    IdGenerator generator = new IdGenerator(numericChars);
+                    return false; // Should have thrown
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
             });
 
             Console.WriteLine();
@@ -387,14 +393,19 @@ namespace Test
                 return id.Length == 256;
             });
 
-            // Test with very small character set (should still work but may take iterations)
-            RunTest("Generate with 2-character set", () =>
+            // Test with very small character set (should throw due to insufficient entropy)
+            RunTest("Generate with 2-character set throws due to insufficient entropy", () =>
             {
-                char[] twoChars = new char[] { 'A', 'B' };
-                IdGenerator generator = new IdGenerator(twoChars);
-                generator.MaxIterations = 200; // Increase iterations for small charset
-                string id = generator.Generate(16);
-                return id.Length == 16 && id.All(c => c == 'A' || c == 'B');
+                try
+                {
+                    char[] twoChars = new char[] { 'A', 'B' };
+                    IdGenerator generator = new IdGenerator(twoChars);
+                    return false; // Should have thrown
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
             });
 
             Console.WriteLine();
