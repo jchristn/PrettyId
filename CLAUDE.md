@@ -98,7 +98,7 @@ The `GenerateAndEncodeBase64()` method:
 The library targets multiple frameworks:
 - .NET Standard 2.0, 2.1
 - .NET Framework 4.61, 4.62, 4.8
-- .NET 6.0, 8.0
+- .NET 8.0, 10.0
 
 This broad targeting ensures compatibility across legacy and modern .NET applications.
 

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using PrettyId;
 
 namespace Test
@@ -29,6 +31,8 @@ namespace Test
             TestConfigurationOptions();
             TestEdgeCases();
             TestErrorHandling();
+            TestThreadSafety();
+            TestAdditionalCoverage();
 
             // Print summary
             Console.WriteLine("\n" + "=".PadRight(80, '='));
@@ -540,6 +544,293 @@ namespace Test
                 {
                     generator.MaxIterations = 300;
                     return false; // Should have thrown
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            Console.WriteLine();
+        }
+
+        static void TestThreadSafety()
+        {
+            Console.WriteLine("[Thread Safety Tests]");
+
+            // Concurrent generation from a single shared instance produces unique, valid IDs.
+            RunTest("Concurrent Generate() across threads produces unique valid IDs", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                ConcurrentBag<string> ids = new ConcurrentBag<string>();
+                Parallel.For(0, 10000, i =>
+                {
+                    ids.Add(generator.Generate(32));
+                });
+
+                if (ids.Count != 10000) return false;
+                if (ids.Any(id => id.Length != 32)) return false;
+                HashSet<string> unique = new HashSet<string>(ids);
+                return unique.Count == 10000;
+            });
+
+            // Concurrent generation with the cryptographic RNG path is also safe and unique.
+            RunTest("Concurrent Generate() with UseCryptographicRng produces unique valid IDs", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                generator.UseCryptographicRng = true;
+                ConcurrentBag<string> ids = new ConcurrentBag<string>();
+                Parallel.For(0, 10000, i =>
+                {
+                    ids.Add(generator.Generate(32));
+                });
+
+                if (ids.Count != 10000) return false;
+                if (ids.Any(id => id.Length != 32)) return false;
+                HashSet<string> unique = new HashSet<string>(ids);
+                return unique.Count == 10000;
+            });
+
+            // Mixed concurrent use of the thread-safe helper methods does not corrupt output.
+            RunTest("Concurrent mixed generation methods produce correctly-shaped IDs", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                ConcurrentBag<bool> results = new ConcurrentBag<bool>();
+                Parallel.For(0, 5000, i =>
+                {
+                    string urlSafe = generator.GenerateUrlSafe(null, 24);
+                    string kSortable = generator.GenerateKSortable(null, 48);
+                    string b64 = generator.GenerateAndEncodeBase64(null, 48);
+                    results.Add(urlSafe.Length == 24 && kSortable.Length == 48 && b64.Length == 48);
+                });
+
+                return results.Count == 5000 && results.All(r => r);
+            });
+
+            Console.WriteLine();
+        }
+
+        static void TestAdditionalCoverage()
+        {
+            Console.WriteLine("[Additional Coverage Tests]");
+
+            // --- Positive cases ---
+
+            // Constructor with char[] and custom maximum length drives parameterless Generate().
+            RunTestWithSample("char[] constructor honors custom maximumLength", () =>
+            {
+                char[] chars = "abcdefghijklmnop".ToCharArray();
+                IdGenerator generator = new IdGenerator(chars, 20);
+                string id = generator.Generate();
+                return id.Length == 20 && id.All(c => chars.Contains(c)) ? id : null;
+            });
+
+            // Constructor with HashSet and custom maximum length drives parameterless Generate().
+            RunTestWithSample("HashSet constructor honors custom maximumLength", () =>
+            {
+                HashSet<char> chars = new HashSet<char>(DefaultCharacterSets.HexadecimalLowercase);
+                IdGenerator generator = new IdGenerator(chars, 40);
+                string id = generator.Generate();
+                return id.Length == 40 ? id : null;
+            });
+
+            // GenerateUrlSafe with all default parameters yields a 32-char URL-safe ID.
+            RunTestWithSample("GenerateUrlSafe with default parameters", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                string id = generator.GenerateUrlSafe();
+                string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+                return id.Length == 32 && id.All(c => validChars.Contains(c)) ? id : null;
+            });
+
+            // GenerateAndEncodeBase64 output decodes back to valid bytes (true base64 round-trip).
+            RunTestWithSample("GenerateAndEncodeBase64 output is decodable base64", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                string id = generator.GenerateAndEncodeBase64(null, 48);
+                byte[] decoded = Convert.FromBase64String(id);
+                return decoded.Length > 0 ? id : null;
+            });
+
+            // The random portion covers the entire character set over enough draws (no dead chars).
+            RunTest("Generation exercises every character in a hex set", () =>
+            {
+                IdGenerator generator = new IdGenerator(DefaultCharacterSets.HexadecimalLowercase);
+                HashSet<char> seen = new HashSet<char>();
+                for (int i = 0; i < 200; i++)
+                {
+                    foreach (char c in generator.Generate(32))
+                        seen.Add(c);
+                }
+                string expected = "0123456789abcdef";
+                return expected.All(c => seen.Contains(c));
+            });
+
+            // A GUID-based and a crypto-RNG generator using the same charset both stay in-alphabet.
+            RunTest("Both RNG modes respect the configured character set", () =>
+            {
+                IdGenerator guidGen = new IdGenerator(DefaultCharacterSets.UrlSafe);
+                IdGenerator cryptoGen = new IdGenerator(DefaultCharacterSets.UrlSafe);
+                cryptoGen.UseCryptographicRng = true;
+                string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+                string a = guidGen.Generate(64);
+                string b = cryptoGen.Generate(64);
+                return a.All(c => validChars.Contains(c)) && b.All(c => validChars.Contains(c));
+            });
+
+            // ValidCharacters setter accepts a valid replacement set and it takes effect.
+            RunTest("ValidCharacters setter replaces the active character set", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                generator.ValidCharacters = new HashSet<char>(DefaultCharacterSets.HexadecimalUppercase);
+                string id = generator.Generate(32);
+                string validChars = "0123456789ABCDEF";
+                return id.All(c => validChars.Contains(c));
+            });
+
+            // --- Negative cases ---
+
+            // GenerateUrlSafe rejects a prefix that is longer than the requested length.
+            RunTest("GenerateUrlSafe with prefix longer than maxLen throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.GenerateUrlSafe("this_prefix_is_too_long", 10);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // GenerateUrlSafe rejects a non-positive maximum length.
+            RunTest("GenerateUrlSafe with maxLen=0 throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.GenerateUrlSafe(null, 0);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // GenerateKSortable rejects a length too small to hold the timestamp prefix.
+            RunTest("GenerateKSortable with too-short maxLen throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.GenerateKSortable(null, 4);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // GenerateAndEncodeBase64 rejects a non-positive maximum length.
+            RunTest("GenerateAndEncodeBase64 with maxLen=0 throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.GenerateAndEncodeBase64(null, 0);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // GenerateAndEncodeBase64 requires at least 4 chars of headroom beyond the prefix.
+            RunTest("GenerateAndEncodeBase64 with prefix too close to maxLen throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.GenerateAndEncodeBase64("prefix_", 8);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // ValidCharacters setter rejects null.
+            RunTest("Setting ValidCharacters to null throws ArgumentNullException", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.ValidCharacters = null;
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return true;
+                }
+            });
+
+            // ValidCharacters setter rejects an empty set.
+            RunTest("Setting ValidCharacters to empty set throws ArgumentException", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.ValidCharacters = new HashSet<char>();
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // MaxIterations setter rejects negative values.
+            RunTest("Setting MaxIterations to a negative value throws", () =>
+            {
+                IdGenerator generator = new IdGenerator();
+                try
+                {
+                    generator.MaxIterations = -1;
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // char[] constructor rejects a non-positive maximum length.
+            RunTest("char[] constructor with maximumLength=0 throws", () =>
+            {
+                try
+                {
+                    IdGenerator generator = new IdGenerator(DefaultCharacterSets.EnglishAlphanumeric.ToArray(), 0);
+                    return false;
+                }
+                catch (ArgumentException)
+                {
+                    return true;
+                }
+            });
+
+            // HashSet constructor rejects a non-positive maximum length.
+            RunTest("HashSet constructor with maximumLength=0 throws", () =>
+            {
+                try
+                {
+                    IdGenerator generator = new IdGenerator(new HashSet<char>(DefaultCharacterSets.EnglishAlphanumeric), 0);
+                    return false;
                 }
                 catch (ArgumentException)
                 {
