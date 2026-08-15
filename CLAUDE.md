@@ -21,29 +21,44 @@ dotnet build src/PrettyId.sln
 ```
 
 ### Running Tests
-The project uses an automated test suite with PASS/FAIL validation:
+Tests are built on [Touchstone](https://www.nuget.org/packages/Touchstone), a runner-agnostic
+test-descriptor framework. Every test case is defined once in **Test.Shared** (the central source
+of truth) and executed through three thin host projects: **Test.Automated** (Touchstone CLI runner),
+**Test.Xunit** (xUnit adapter), and **Test.Nunit** (NUnit adapter). The test projects target
+`net8.0;net10.0` (the frameworks Touchstone supports); the library itself still multi-targets broadly.
+
 ```bash
-# Run the automated test suite
-dotnet run --project src/Test/Test.csproj
+# Run the console (CLI) runner with a colored PASS/FAIL table and non-zero exit on failure
+dotnet run --project src/Test.Automated/Test.Automated.csproj
 
-# Run in Release mode
-dotnet run --project src/Test/Test.csproj -c Release
+# Run a specific framework
+dotnet run --project src/Test.Automated/Test.Automated.csproj --framework net8.0
 
-# Run with specific framework
-dotnet run --project src/Test/Test.csproj --framework net8.0
+# Run via xUnit (one theory row per descriptor)
+dotnet test src/Test.Xunit/Test.Xunit.csproj
+
+# Run via NUnit (one TestCaseSource entry per descriptor)
+dotnet test src/Test.Nunit/Test.Nunit.csproj
 ```
 
-The test suite includes 43+ tests covering:
-- Basic ID generation (default, custom lengths, character validation, uniqueness)
-- Prefix generation (with various prefix types and edge cases)
-- Custom character sets (hex, base64, URL-safe, numeric)
-- URL-safe ID generation
-- K-sortable (timestamp-based) ID generation
-- Base64-encoded ID generation
-- Cryptographic RNG generation
-- Configuration options (MaximumLength, ValidCharacters, MaxIterations)
-- Edge cases (very short/long IDs, restrictive character sets)
+The suite includes 100 test cases across 13 suites covering:
+- Construction and validation (char[]/HashSet constructors, 16-char minimum, null/empty/boundary cases)
+- Basic ID generation (default, custom lengths 1–1024, character validation, uniqueness)
+- Prefix generation (with various prefix types, boundaries, and edge cases)
+- Custom character sets (hex, base64, URL-safe)
+- URL-safe ID generation (including no-instance-mutation guarantee)
+- K-sortable (timestamp-based) ID generation (base36 timestamp, chronological ordering)
+- Base64-encoded ID generation (length math, round-trip decodability)
+- Cryptographic vs GUID RNG modes
+- Configuration options (MaximumLength, ValidCharacters, MaxIterations) and their boundaries
+- Default character set contents and uniqueness
+- Edge cases (very short/long IDs, restrictive character sets via setter vs constructor)
 - Error handling (invalid parameters, null values, out-of-range values)
+- Thread safety (concurrent generation across 10k iterations)
+- Character distribution (every character in a set is exercised)
+
+To add or change a test, edit only `src/Test.Shared/TestSuites.cs`; all three runners pick it up
+automatically. `Assert.cs` provides the lightweight, framework-agnostic assertion helpers.
 
 ### NuGet Package
 The project is configured to automatically generate NuGet packages on build (`GeneratePackageOnBuild` is enabled). Package output can be found in `src/PrettyId/bin/Release/`.
@@ -126,8 +141,14 @@ This broad targeting ensures compatibility across legacy and modern .NET applica
 
 ## Testing
 
-The Test project (`src/Test/Test.csproj`) contains a comprehensive automated test suite that validates every scenario:
-- Returns exit code 0 if all tests pass, 1 if any fail
-- Prints PASS/FAIL for each individual test
-- Provides a summary with total/passed/failed counts and percentages
-- Tests cover all generation methods, configuration options, edge cases, and error handling
+The Touchstone-based test infrastructure (see **Running Tests** above) validates every scenario
+from a single shared descriptor set:
+- **Test.Shared** (`src/Test.Shared`) is the central source of truth. `TestSuites.All` exposes 13
+  suites / 100 descriptors; `Assert.cs` provides framework-agnostic assertions that throw on failure.
+- **Test.Automated** (`src/Test.Automated`) runs the descriptors through the Touchstone CLI runner:
+  colored PASS/FAIL table, and exit code 0 when all pass / 1 when any fail.
+- **Test.Xunit** (`src/Test.Xunit`) surfaces each descriptor as an xUnit theory row via the
+  Touchstone xUnit adapter (`dotnet test`).
+- **Test.Nunit** (`src/Test.Nunit`) surfaces each descriptor as an NUnit test case via the
+  Touchstone NUnit adapter (`dotnet test`).
+- All runners execute the identical logic, so a test added to Test.Shared is covered everywhere.
