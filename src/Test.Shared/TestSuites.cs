@@ -184,6 +184,20 @@ namespace Test.Shared
                     "maximumLength 0 rejected");
             }));
 
+            cases.Add(Case(s, "hashset-exactly-16", "HashSet constructor accepts exactly 16 unique characters (boundary)", () =>
+            {
+                IdGenerator g = new IdGenerator(new HashSet<char>("0123456789abcdef".ToCharArray()));
+                Assert.Equal(16, g.ValidCharacters.Count, "16 unique chars accepted");
+                Assert.AllCharsIn(g.Generate(32), CharSets.HexLower, "generates hex-lower IDs");
+            }));
+
+            cases.Add(Case(s, "hashset-15-throws", "HashSet constructor with 15 unique characters throws (boundary)", () =>
+            {
+                Assert.Throws<ArgumentException>(
+                    () => { IdGenerator g = new IdGenerator(new HashSet<char>("0123456789abcde".ToCharArray())); },
+                    "15 unique chars rejected");
+            }));
+
             return Suite(s, "Construction and Validation", cases);
         }
 
@@ -237,6 +251,13 @@ namespace Test.Shared
             {
                 IdGenerator g = new IdGenerator();
                 Assert.Throws<ArgumentException>(() => g.Generate(-1), "negative length rejected");
+            }));
+
+            cases.Add(Case(s, "length-overload-overrides-maxlength", "Generate(length) uses its argument, not the MaximumLength property", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                g.MaximumLength = 8;
+                Assert.Length(40, g.Generate(40), "explicit length wins over MaximumLength");
             }));
 
             return Suite(s, "Basic Generation", cases);
@@ -309,6 +330,15 @@ namespace Test.Shared
                     "prefix longer than maxLen rejected");
             }));
 
+            cases.Add(Case(s, "custom-charset-random-portion", "Prefixed generation draws the random portion from the instance character set", () =>
+            {
+                IdGenerator g = new IdGenerator(DefaultCharacterSets.HexadecimalUppercase);
+                string id = g.Generate("KEY_", 32);
+                Assert.Length(32, id, "total length");
+                Assert.StartsWith("KEY_", id, "prefix preserved");
+                Assert.AllCharsIn(id.Substring(4), CharSets.HexUpper, "random portion is hex upper");
+            }));
+
             return Suite(s, "Prefix Generation", cases);
         }
 
@@ -366,6 +396,24 @@ namespace Test.Shared
                 Assert.Throws<ArgumentException>(
                     () => g.GenerateUrlSafe("this_prefix_is_too_long", 10),
                     "over-long prefix rejected");
+            }));
+
+            cases.Add(Case(s, "empty-prefix", "GenerateUrlSafe with empty prefix behaves like no prefix", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                string id = g.GenerateUrlSafe("", 32);
+                Assert.Length(32, id, "length");
+                Assert.AllCharsIn(id, CharSets.UrlSafe, "url-safe chars only");
+            }));
+
+            cases.Add(Case(s, "crypto-rng", "GenerateUrlSafe works with UseCryptographicRng and stays URL-safe", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                g.UseCryptographicRng = true;
+                string id = g.GenerateUrlSafe("api_", 32);
+                Assert.Length(32, id, "length");
+                Assert.StartsWith("api_", id, "prefix preserved");
+                Assert.AllCharsIn(id, CharSets.UrlSafe, "url-safe chars only");
             }));
 
             return Suite(s, "URL-Safe Generation", cases);
@@ -429,6 +477,49 @@ namespace Test.Shared
                 Assert.Throws<ArgumentException>(() => g.GenerateKSortable(null, 4), "maxLen too short rejected");
             }));
 
+            cases.Add(Case(s, "prefix-too-short-throws", "GenerateKSortable throws when the prefix plus timestamp leaves no room", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                Assert.Throws<ArgumentException>(() => g.GenerateKSortable("order_", 10), "prefix + timestamp exceeds maxLen rejected");
+            }));
+
+            cases.Add(Case(s, "empty-prefix", "GenerateKSortable with empty prefix behaves like no prefix", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                string id = g.GenerateKSortable("", 48);
+                Assert.Length(48, id, "length");
+                Assert.Equal(2, id.Split('_').Length, "timestamp and random segments only");
+            }));
+
+            cases.Add(Case(s, "timestamp-reflects-now", "GenerateKSortable timestamp decodes to the current Unix time", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                long before = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                string id = g.GenerateKSortable(null, 48);
+                long after = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                long ts = CharSets.FromBase36(id.Split('_')[0]);
+                Assert.True(ts >= before - 1000 && ts <= after + 1000, "decoded timestamp within +/-1s of now");
+            }));
+
+            cases.Add(Case(s, "custom-charset-random-segment", "GenerateKSortable random segment honors the instance character set", () =>
+            {
+                IdGenerator g = new IdGenerator(DefaultCharacterSets.HexadecimalLowercase);
+                string id = g.GenerateKSortable(null, 48);
+                Assert.AllCharsIn(id.Split('_')[1], CharSets.HexLower, "random segment is hex lower");
+            }));
+
+            cases.Add(Case(s, "crypto-rng", "GenerateKSortable works with UseCryptographicRng and stays correctly shaped", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                g.UseCryptographicRng = true;
+                string id = g.GenerateKSortable(null, 48);
+                Assert.Length(48, id, "length");
+                string[] parts = id.Split('_');
+                Assert.Equal(2, parts.Length, "two segments");
+                Assert.AllCharsIn(parts[0], CharSets.Base36, "timestamp is base36");
+                Assert.AllCharsIn(parts[1], CharSets.Alphanumeric, "random is alphanumeric");
+            }));
+
             return Suite(s, "K-Sortable Generation", cases);
         }
 
@@ -480,6 +571,39 @@ namespace Test.Shared
                 Assert.Throws<ArgumentException>(() => g.GenerateAndEncodeBase64("prefix_", 8), "insufficient headroom rejected");
             }));
 
+            cases.Add(Case(s, "maxlen-negative-throws", "GenerateAndEncodeBase64 with a negative maxLen throws", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                Assert.Throws<ArgumentException>(() => g.GenerateAndEncodeBase64(null, -4), "negative maxLen rejected");
+            }));
+
+            cases.Add(Case(s, "min-boundary-4", "GenerateAndEncodeBase64(null, 4) yields a decodable 4-character result (boundary)", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                string id = g.GenerateAndEncodeBase64(null, 4);
+                Assert.Length(4, id, "smallest valid encoded length");
+                Assert.AllCharsIn(id, CharSets.Base64, "base64 chars only");
+                byte[] decoded = Convert.FromBase64String(id);
+                Assert.True(decoded.Length > 0, "decoded to non-empty bytes");
+            }));
+
+            cases.Add(Case(s, "maxlen-below-4-no-prefix-throws", "GenerateAndEncodeBase64 with maxLen below 4 leaves no encodable content and throws", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                Assert.Throws<ArgumentException>(() => g.GenerateAndEncodeBase64(null, 3), "maxLen 3 rejected (rounds down to zero content)");
+            }));
+
+            cases.Add(Case(s, "crypto-rng", "GenerateAndEncodeBase64 works with UseCryptographicRng and round-trips", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                g.UseCryptographicRng = true;
+                string id = g.GenerateAndEncodeBase64(null, 48);
+                Assert.Length(48, id, "length");
+                Assert.AllCharsIn(id, CharSets.Base64, "base64 chars only");
+                byte[] decoded = Convert.FromBase64String(id);
+                Assert.True(decoded.Length > 0, "decoded to non-empty bytes");
+            }));
+
             return Suite(s, "Base64-Encoded Generation", cases);
         }
 
@@ -521,6 +645,17 @@ namespace Test.Shared
                 cryptoGen.UseCryptographicRng = true;
                 Assert.AllCharsIn(guidGen.Generate(64), CharSets.UrlSafe, "guid mode url-safe");
                 Assert.AllCharsIn(cryptoGen.Generate(64), CharSets.UrlSafe, "crypto mode url-safe");
+            }));
+
+            cases.Add(Case(s, "toggle-back-to-guid", "Disabling UseCryptographicRng after enabling it returns to GUID mode and still generates valid IDs", () =>
+            {
+                IdGenerator g = new IdGenerator();
+                g.UseCryptographicRng = true;
+                Assert.Length(32, g.Generate(32), "crypto mode length");
+                g.UseCryptographicRng = false;
+                string id = g.Generate(32);
+                Assert.Length(32, id, "guid mode length after toggle");
+                Assert.AllCharsIn(id, CharSets.Alphanumeric, "alphanumeric after toggle");
             }));
 
             return Suite(s, "Random Number Generation Modes", cases);

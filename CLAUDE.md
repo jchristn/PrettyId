@@ -41,7 +41,7 @@ dotnet test src/Test.Xunit/Test.Xunit.csproj
 dotnet test src/Test.Nunit/Test.Nunit.csproj
 ```
 
-The suite includes 100 test cases across 13 suites covering:
+The suite includes 116 test cases across 13 suites covering:
 - Construction and validation (char[]/HashSet constructors, 16-char minimum, null/empty/boundary cases)
 - Basic ID generation (default, custom lengths 1–1024, character validation, uniqueness)
 - Prefix generation (with various prefix types, boundaries, and edge cases)
@@ -144,7 +144,7 @@ This broad targeting ensures compatibility across legacy and modern .NET applica
 The Touchstone-based test infrastructure (see **Running Tests** above) validates every scenario
 from a single shared descriptor set:
 - **Test.Shared** (`src/Test.Shared`) is the central source of truth. `TestSuites.All` exposes 13
-  suites / 100 descriptors; `Assert.cs` provides framework-agnostic assertions that throw on failure.
+  suites / 116 descriptors; `Assert.cs` provides framework-agnostic assertions that throw on failure.
 - **Test.Automated** (`src/Test.Automated`) runs the descriptors through the Touchstone CLI runner:
   colored PASS/FAIL table, and exit code 0 when all pass / 1 when any fail.
 - **Test.Xunit** (`src/Test.Xunit`) surfaces each descriptor as an xUnit theory row via the
