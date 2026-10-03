@@ -220,8 +220,12 @@ Parallel.For(0, 1000, i => {
 # Build the library
 dotnet build src/PrettyId/PrettyId.csproj
 
-# Run the test/demo program
-dotnet run --project src/Test/Test.csproj
+# Run the test suite (116 Touchstone test cases) via the CLI runner
+dotnet run --project src/Test.Automated/Test.Automated.csproj
+
+# Or run the same tests through xUnit / NUnit
+dotnet test src/Test.Xunit/Test.Xunit.csproj
+dotnet test src/Test.Nunit/Test.Nunit.csproj
 
 # Build release (generates NuGet package)
 dotnet build src/PrettyId/PrettyId.csproj -c Release
@@ -233,7 +237,7 @@ PrettyId supports a wide range of .NET frameworks:
 
 - .NET Standard 2.0, 2.1
 - .NET Framework 4.6.1, 4.6.2, 4.8
-- .NET 6.0, 8.0+
+- .NET 8.0, 10.0
 
 ## Contributing
 

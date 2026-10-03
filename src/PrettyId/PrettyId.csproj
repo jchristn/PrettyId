@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.1</Version>
+		<Version>2.0.2</Version>
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net461;net462;net48;net8.0;net10.0</TargetFrameworks>
 		<Authors>Joel Christner</Authors>
 		<Company>Joel Christner</Company>
 		<Description>Simple static method for generating IDs like those used by Stripe and other services</Description>
-		<Copyright>(c)2025 Joel Christner</Copyright>
+		<Copyright>(c)2026 Joel Christner</Copyright>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/jchristn/PrettyId</PackageProjectUrl>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/jchristn/PrettyId</RepositoryUrl>
 		<RepositoryType>github</RepositoryType>
 		<PackageTags>pretty id guid identifier stripe database key access secret generate generator</PackageTags>
-		<PackageReleaseNotes>Add generation of valid base64 values.</PackageReleaseNotes>
+		<PackageReleaseNotes>Maintenance release: test dependency updates and documentation refresh.</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>

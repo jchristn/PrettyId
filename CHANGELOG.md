@@ -2,6 +2,20 @@
 
 ## Current Version
 
+v2.0.2
+
+**Dependency Updates (test projects only; the library has no package dependencies):**
+- Touchstone.Core / Touchstone.Cli / Touchstone.XunitAdapter / Touchstone.NunitAdapter 0.1.12 -> 0.2.0
+- NUnit 4.6.1 -> 5.0.0
+- NUnit3TestAdapter 6.2.0 -> 6.3.0
+- Microsoft.NET.Test.Sdk 18.9.0 -> 18.10.1
+- All 116 test cases pass across the Touchstone CLI, xUnit, and NUnit runners on net8.0 and net10.0
+
+**Documentation:**
+- README build-from-source instructions updated for the Touchstone test projects; framework support list corrected
+
+## Previous Versions
+
 v2.0.1
 
 **Bug Fixes:**
@@ -14,8 +28,6 @@ v2.0.1
 - `DefaultCharacterSets` arrays changed from `static` to `static readonly` to prevent accidental mutation
 - `MaxIterations` property retained for backward API compatibility but is no longer used internally
 - Character sets with fewer than 16 unique characters now throw `ArgumentException` at construction time
-
-## Previous Versions
 
 v2.0.0
 
