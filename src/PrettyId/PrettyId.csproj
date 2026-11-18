@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.2</Version>
+		<Version>2.0.3</Version>
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net461;net462;net48;net8.0;net10.0</TargetFrameworks>
 		<Authors>Joel Christner</Authors>
 		<Company>Joel Christner</Company>
@@ -11,7 +11,7 @@
 		<PackageProjectUrl>https://github.com/jchristn/PrettyId</PackageProjectUrl>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/jchristn/PrettyId</RepositoryUrl>
-		<RepositoryType>github</RepositoryType>
+		<RepositoryType>git</RepositoryType>
 		<PackageTags>pretty id guid identifier stripe database key access secret generate generator</PackageTags>
 		<PackageReleaseNotes>Maintenance release: test dependency updates and documentation refresh.</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -22,6 +22,9 @@
 		<Title>PrettyId</Title>
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
